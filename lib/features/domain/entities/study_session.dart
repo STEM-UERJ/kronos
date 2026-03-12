@@ -2,7 +2,7 @@
 ///
 /// Representa uma sessão de estudo — pode estar em andamento ([endTime] == null)
 /// ou concluída ([endTime] != null).
-final class StudySession {
+class StudySession {
   final String id;
 
   /// Assunto / área de estudo (ex: 'Flutter', 'Inglês', 'LLMs').

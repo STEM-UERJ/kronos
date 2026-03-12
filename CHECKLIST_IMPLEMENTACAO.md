@@ -1,0 +1,118 @@
+#!/bin/bash
+#
+# 📋 CHECKLIST DE IMPLEMENTAÇÃO - KRONOS APP
+#
+# Use este documento para acompanhar cada tarefa de implementação
+# Marque com [x] quando completar cada item
+#
+
+echo "========================================"
+echo "  📋 CHECKLIST - KRONOS IMPLEMENTATION  "
+echo "========================================"
+echo ""
+
+# ============= CAMADA DE DADOS =============
+echo "## 1️⃣ CAMADA DE DADOS (Data Layer)"
+echo ""
+echo "### Model"
+echo "  [ ] lib/features/data/model/study_session_model.dart"
+echo "      [ ] Implementar StudySessionModel.fromMap()"
+echo "      [ ] Implementar StudySessionModel.toMap()"
+echo "      [ ] Implementar StudySessionModel.fromEntity()"
+echo ""
+
+echo "### Data Source"
+echo "  [ ] lib/features/data/source/local_study_session_source.dart"
+echo "      [ ] Implementar LocalStudySessionSourceImpl.initDatabase()"
+echo "      [ ] Implementar saveSession()"
+echo "      [ ] Implementar getAllSessions()"
+echo "      [ ] Implementar getSessionById()"
+echo "      [ ] Implementar updateSync()"
+echo "      [ ] Implementar deleteSession()"
+echo ""
+
+echo "### Repository"
+echo "  [ ] lib/features/data/repositories/study_session_repository_impl.dart"
+echo "      [ ] Implementar saveSession()"
+echo "      [ ] Implementar getAllSessions()"
+echo "      [ ] Implementar getUnsyncedSessions()"
+echo "      [ ] Implementar markAsSynced()"
+echo ""
+
+# ============= CAMADA DE DOMÍNIO =============
+echo "## 2️⃣ CAMADA DE DOMÍNIO (Domain Layer)"
+echo ""
+echo "### Use Cases"
+echo "  [ ] lib/features/domain/usecases/start_study_session_use_case.dart"
+echo "      [ ] Implementar StartStudySessionUseCase.call()"
+echo ""
+echo "  [ ] lib/features/domain/usecases/finish_and_save_session_locally_use_case.dart"
+echo "      [ ] Implementar FinishAndSaveSessionLocallyUseCase.call()"
+echo ""
+echo "  [ ] lib/features/domain/usecases/get_local_study_history_use_case.dart"
+echo "      [ ] Implementar GetLocalStudyHistoryUseCase.call()"
+echo ""
+
+# ============= CAMADA DE APRESENTAÇÃO =============
+echo "## 3️⃣ CAMADA DE APRESENTAÇÃO (Presenter Layer)"
+echo ""
+echo "### Estados"
+echo "  [ ] lib/features/presenter/timer/logic/timer_state.dart"
+echo "      [ ] Estados criados: TimerInitial, Running, Paused, Finished, Error"
+echo ""
+echo "  [ ] lib/features/presenter/history/logic/history_state.dart"
+echo "      [ ] Estados criados: Initial, Loading, Loaded, Error"
+echo ""
+
+echo "### Cubits"
+echo "  [ ] lib/features/presenter/timer/logic/timer_cubit.dart"
+echo "      [ ] Implementar TimerCubit.startTimer()"
+echo "      [ ] Implementar TimerCubit.pauseTimer()"
+echo "      [ ] Implementar TimerCubit.resumeTimer()"
+echo "      [ ] Implementar TimerCubit.finishSession()"
+echo ""
+echo "  [ ] lib/features/presenter/history/logic/history_cubit.dart"
+echo "      [ ] Implementar HistoryCubit.loadHistory()"
+echo "      [ ] Implementar HistoryCubit.refresh()"
+echo ""
+
+echo "### Páginas"
+echo "  [ ] lib/features/presenter/home/page/home_page.dart"
+echo "      [ ] Implementar UI da página inicial"
+echo ""
+echo "  [ ] lib/features/presenter/timer/page/timer_page.dart"
+echo "      [ ] Conectar TimerCubit"
+echo "      [ ] Implementar UI do timer"
+echo ""
+echo "  [ ] lib/features/presenter/history/page/history_page.dart"
+echo "      [ ] Conectar HistoryCubit"
+echo "      [ ] Implementar UI da lista de histórico"
+echo ""
+echo "  [ ] lib/features/presenter/config/page/config_page.dart"
+echo "      [ ] Implementar UI de configurações"
+echo ""
+
+# ============= INTEGRAÇÃO =============
+echo "## 4️⃣ INTEGRAÇÃO E TESTES"
+echo ""
+echo "### Dependency Injection"
+echo "  [ ] Registrar StudySessionModel no GetIt"
+echo "  [ ] Registrar LocalStudySessionSource no GetIt"
+echo "  [ ] Registrar StudySessionRepository no GetIt"
+echo "  [ ] Registrar Use Cases no GetIt"
+echo "  [ ] Registrar Cubits no GetIt"
+echo ""
+
+echo "### Testes"
+echo "  [ ] Testar criação de nova sessão"
+echo "  [ ] Testar persistência no Sqflite"
+echo "  [ ] Testar recuperação de histórico"
+echo "  [ ] Testar pausa/retomada do timer"
+echo "  [ ] Testar finalização e salvamento"
+echo ""
+
+echo ""
+echo "========================================"
+echo "        ✨ Boa sorte na implementação! ✨"
+echo "========================================"
+echo ""

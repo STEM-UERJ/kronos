@@ -18,9 +18,17 @@ final class FinishSessionParams {
 /// Responsabilidades:
 /// 1. Registra [endTime] = DateTime.now() na sessão.
 /// 2. Garante que [isSynced] == false (a sincronização com GitHub Gists é feita
-///    depois, por [SyncSessionsWithRemoteUseCase]).
+///    depois, por outro use case se implementado).
 /// 3. Delega a persistência ao [StudySessionRepository].
-/// 4. Retorna a sessão concluída para o provider atualizar a UI.
+/// 4. Retorna a sessão concluída para o Cubit atualizar a UI.
+///
+/// Implementação esperada:
+/// - Completar a sessão ativa com endTime = DateTime.now()
+/// - Atualizar as notas (usar notas fornecidas ou manter as existentes)
+/// - Garantir que isSynced = false
+/// - Chamar repository.saveSession() para persistir
+/// - Retornar a sessão completada
+/// - Lançar exceção em caso de erro
 ///
 /// ```dart
 /// final saved = await finishAndSave(
@@ -32,20 +40,24 @@ final class FinishSessionParams {
 /// ```
 final class FinishAndSaveSessionLocallyUseCase
     implements UseCase<StudySession, FinishSessionParams> {
+  // ignore: unused_field
   final StudySessionRepository _repository;
 
   const FinishAndSaveSessionLocallyUseCase(this._repository);
 
   @override
   Future<StudySession> call(FinishSessionParams params) async {
-    final completed = params.activeSession.copyWith(
-      endTime: DateTime.now(),
-      isSynced: false,
-      notes: params.notes ?? params.activeSession.notes,
-    );
-
-    await _repository.saveSession(completed);
-
-    return completed;
+    // TODO: Implementar finalização e persistência de sessão
+    // 1. Criar nova sessão completada a partir de params.activeSession:
+    //    - Manter id, subject, startTime
+    //    - Definir endTime: DateTime.now()
+    //    - Definir isSynced: false
+    //    - Definir notes: params.notes ?? params.activeSession.notes
+    //       (usar notas fornecidas ou manter as existentes)
+    // 2. Chamar _repository.saveSession(completed)
+    // 3. Retornar a sessão completada
+    // Nota: StudySession possivelmente tem um método copyWith() para copiar com alterações
+    throw UnimplementedError('call() não implementado');
   }
 }
+
