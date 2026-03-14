@@ -3,7 +3,10 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
+const isFigmaBuild = process.env.npm_lifecycle_event === 'build:figma';
+
 export default defineConfig({
+  base: isFigmaBuild ? './' : '/',
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
