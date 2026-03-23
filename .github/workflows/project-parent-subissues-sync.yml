@@ -82,11 +82,13 @@ jobs:
               return option?.id;
             };
 
+            const backlogOptionId = findOptionId(["Backlog"]);
+            const readyOptionId = findOptionId(["Ready"]);
             const inProgressOptionId = findOptionId(["In Progress", "In progress"]);
             const doneOptionId = findOptionId(["Done"]);
 
-            if (!inProgressOptionId || !doneOptionId) {
-              core.setFailed("Could not find required status options: In Progress and Done.");
+            if (!backlogOptionId || !readyOptionId || !inProgressOptionId || !doneOptionId) {
+              core.setFailed("Could not find required status options: Backlog, Ready, In Progress and Done.");
               return;
             }
 
@@ -217,6 +219,7 @@ jobs:
               }
 
               const parentIsInProgress = parentItem.statusOptionId === inProgressOptionId;
+              const parentIsReady = parentItem.statusOptionId === readyOptionId;
 
               if (parentIsInProgress) {
                 for (const subNumber of subIssueNumbers) {
@@ -234,6 +237,50 @@ jobs:
                     core.info(`Set sub-issue #${subNumber} to In Progress (parent #${parentIssueNumber} in progress).`);
                     subItem.statusOptionId = inProgressOptionId;
                     subItem.statusName = "In Progress";
+                  }
+                }
+              }
+
+              if (parentIsReady) {
+                for (const subNumber of subIssueNumbers) {
+                  const subItem = itemsByIssueNumber.get(subNumber);
+                  if (!subItem) {
+                    core.warning(`Sub-issue #${subNumber} is not in the project.`);
+                    continue;
+                  }
+
+                  // Do not regress items that are already Done.
+                  if (subItem.statusOptionId === doneOptionId) continue;
+
+                  if (subItem.statusOptionId !== backlogOptionId) {
+                    await setStatus(subItem.projectItemId, backlogOptionId);
+                    core.info(`Set sub-issue #${subNumber} to Backlog (parent #${parentIssueNumber} is Ready).`);
+                    subItem.statusOptionId = backlogOptionId;
+                    subItem.statusName = "Backlog";
+                  }
+                }
+              }
+
+              // Keep backlog focused on active planning cards only.
+              // If parent is not Ready or In Progress, non-done sub-issues go to Ready.
+              if (!parentIsReady && !parentIsInProgress) {
+                for (const subNumber of subIssueNumbers) {
+                  const subItem = itemsByIssueNumber.get(subNumber);
+                  if (!subItem) {
+                    core.warning(`Sub-issue #${subNumber} is not in the project.`);
+                    continue;
+                  }
+
+                  // Do not regress items that are already Done.
+                  if (subItem.statusOptionId === doneOptionId) continue;
+
+                  if (subItem.statusOptionId !== readyOptionId) {
+                    await setStatus(subItem.projectItemId, readyOptionId);
+                    core.info(
+                      `Set sub-issue #${subNumber} to Ready (parent #${parentIssueNumber} is neither Ready nor In Progress).`
+                    );
+                    subItem.statusOptionId = readyOptionId;
+                    subItem.statusName = "Ready";
                   }
                 }
               }
