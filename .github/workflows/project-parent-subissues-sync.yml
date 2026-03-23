@@ -2,6 +2,9 @@ name: Sync Project Parent and Sub-issues
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - dev
   schedule:
     - cron: "*/5 * * * *"
 
