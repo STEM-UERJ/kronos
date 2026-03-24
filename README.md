@@ -100,7 +100,7 @@ git push -u origin feat/timer-study-session
 
 ## 3. Integração com a API do GitHub Gists
 
-Você pode usar os Gists do GitHub como um "banco de dados" remoto para salvar relatórios semanais em formato JSON ou Markdown. A comunicação é feita via `dio`.
+ Você pode usar os Gists do GitHub como um "banco de dados" remoto para salvar relatórios semanais em formato JSON ou Markdown. A comunicação é feita via `dio`.
 
 ### Como criar um TOKEN para modificar o Gist?
 
