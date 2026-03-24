@@ -25,10 +25,6 @@ final class GetLocalStudyHistoryUseCase
 
   @override
   Future<List<StudySession>> call(NoParams params) async {
-    // TODO: Implementar recuperação do histórico
-    // 1. Chamar _repository.getAllSessions()
-    // 2. Retornar a lista obtida
-    // Observação: O repositório já deve ordenar por startTime decrescente
-    throw UnimplementedError('call() não implementado');
+    return await _repository.getAllSessions();
   }
 }

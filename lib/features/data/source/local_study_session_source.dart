@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:kronos/core/sql/database.dart';
 import 'package:kronos/features/data/model/study_session_model.dart';
 
 /// Contrato (interface) para a fonte de dados local de sessões de estudo.
@@ -30,73 +31,70 @@ class LocalStudySessionSourceImpl implements LocalStudySessionSource {
   /// Nome da tabela no banco de dados.
   static const String tableName = 'study_sessions';
 
-  /// Instância do banco de dados Sqflite.
-  final Database database;
+  /// Classe de serviço de banco com criação e conexão.
+  final DatabaseService databaseService;
 
-  LocalStudySessionSourceImpl({required this.database});
+  LocalStudySessionSourceImpl({required this.databaseService});
 
-  /// Initializa a tabela no banco de dados na primeira execução.
-  ///
-  /// Implementação esperada:
-  /// - Criar tabela com schema:
-  ///   - id (TEXT PRIMARY KEY)
-  ///   - subject (TEXT NOT NULL)
-  ///   - startTime (INTEGER NOT NULL) - timestamp em ms
-  ///   - endTime (INTEGER) - null enquanto sessão estiver ativa
-  ///   - isSynced (INTEGER DEFAULT 0)
-  ///   - notes (TEXT)
-  ///   - createdAt (INTEGER DEFAULT current timestamp)
   static Future<void> initDatabase(Database db) async {
-    // TODO: Implementar criação da tabela
-    // CREATE TABLE IF NOT EXISTS $tableName (
-    //   id TEXT PRIMARY KEY,
-    //   subject TEXT NOT NULL,
-    //   startTime INTEGER NOT NULL,
-    //   endTime INTEGER,
-    //   isSynced INTEGER DEFAULT 0,
-    //   notes TEXT,
-    //   createdAt INTEGER DEFAULT (strftime('%s', 'now') * 1000)
-    // )
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $tableName (
+        id TEXT PRIMARY KEY,
+        subject TEXT NOT NULL,
+        start_time TEXT NOT NULL,
+        end_time TEXT,
+        is_synced INTEGER NOT NULL DEFAULT 0,
+        notes TEXT,
+        created_at INTEGER DEFAULT (strftime('%s', 'now') * 1000)
+      )
+    ''');
   }
 
   @override
   Future<void> saveSession(StudySessionModel session) async {
-    // TODO: Implementar persistência de sessão
-    // 1. Converter session para mapa usando session.toMap()
-    // 2. Executar INSERT OR REPLACE na tabela
-    // 3. Usar db.insert() ou db.rawInsert()
+    final db = await databaseService.database;
+    await db.insert(
+      tableName,
+      session.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   @override
   Future<List<StudySessionModel>> getAllSessions() async {
-    // TODO: Implementar recuperação de todas as sessões
-    // 1. Executar query: SELECT * FROM $tableName ORDER BY startTime DESC
-    // 2. Converter cada mapa resultado em StudySessionModel usando fromMap()
-    // 3. Retornar lista de modelos
-    throw UnimplementedError('getAllSessions() não implementado');
+    final db = await databaseService.database;
+    final rows = await db.query(tableName, orderBy: 'start_time DESC');
+    return rows.map((row) => StudySessionModel.fromMap(row)).toList();
   }
 
   @override
   Future<StudySessionModel?> getSessionById(String id) async {
-    // TODO: Implementar busca de sessão por ID
-    // 1. Executar query: SELECT * FROM $tableName WHERE id = ?
-    // 2. Se encontrado, converter mapa em StudySessionModel
-    // 3. Se não encontrado, retornar null
-    throw UnimplementedError('getSessionById() não implementado');
+    final db = await databaseService.database;
+    final rows = await db.query(
+      tableName,
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+
+    if (rows.isEmpty) return null;
+    return StudySessionModel.fromMap(rows.first);
   }
 
   @override
   Future<void> updateSync(String sessionId, bool isSynced) async {
-    // TODO: Implementar atualização de status de sincronização
-    // 1. Converter bool isSynced para int (1 ou 0)
-    // 2. Executar UPDATE $tableName SET isSynced = ? WHERE id = ?
-    // 3. Usar db.update()
+    final db = await databaseService.database;
+    await db.update(
+      tableName,
+      {'is_synced': isSynced ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [sessionId],
+    );
   }
 
   @override
   Future<void> deleteSession(String id) async {
-    // TODO: Implementar remoção de sessão
-    // 1. Executar DELETE FROM $tableName WHERE id = ?
-    // 2. Usar db.delete()
+    final db = await databaseService.database;
+    await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
   }
 }

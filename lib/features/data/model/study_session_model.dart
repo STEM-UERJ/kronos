@@ -28,15 +28,33 @@ class StudySessionModel extends StudySession {
   /// - Converter timestamps (int) para DateTime
   /// - Retornar nova instância de StudySessionModel
   factory StudySessionModel.fromMap(Map<String, dynamic> map) {
-    // TODO: Implementar conversão do mapa para modelo
-    // O mapa contém os seguintes campos:
-    // - 'id': String
-    // - 'subject': String
-    // - 'startTime': int (timestamp em ms)
-    // - 'endTime': int? (null se sessão em andamento)
-    // - 'isSynced': int (0 ou 1 no Sqflite, deve usar bool)
-    // - 'notes': String?
-    throw UnimplementedError('fromMap() não implementado');
+    final startTimeRaw = map['start_time'] ?? map['startTime'];
+    final endTimeRaw = map['end_time'] ?? map['endTime'];
+    final isSyncedRaw = map['is_synced'] ?? map['isSynced'];
+
+    DateTime? parseDateTime(dynamic value) {
+      if (value == null) return null;
+      if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+      if (value is String) return DateTime.tryParse(value);
+      throw FormatException('Formato de data inválido: $value');
+    }
+
+    bool parseBool(dynamic value) {
+      if (value == null) return false;
+      if (value is bool) return value;
+      if (value is int) return value == 1;
+      if (value is String) return value == '1' || value.toLowerCase() == 'true';
+      return false;
+    }
+
+    return StudySessionModel(
+      id: map['id'] as String,
+      subject: map['subject'] as String,
+      startTime: parseDateTime(startTimeRaw)!,
+      endTime: parseDateTime(endTimeRaw),
+      isSynced: parseBool(isSyncedRaw),
+      notes: map['notes'] as String?,
+    );
   }
 
   /// Converte [StudySessionModel] em um mapa para armazenar no Sqflite.
@@ -46,15 +64,14 @@ class StudySessionModel extends StudySession {
   /// - Converter DateTime para timestamp (milliseconds)
   /// - Converter bool isSynced para int (0/1)
   Map<String, dynamic> toMap() {
-    // TODO: Implementar conversão do modelo para mapa
-    // Deve retornar um mapa com:
-    // - 'id': id
-    // - 'subject': subject
-    // - 'startTime': startTime.millisecondsSinceEpoch
-    // - 'endTime': endTime?.millisecondsSinceEpoch
-    // - 'isSynced': isSynced ? 1 : 0 (Sqflite usa int para bool)
-    // - 'notes': notes
-    throw UnimplementedError('toMap() não implementado');
+    return {
+      'id': id,
+      'subject': subject,
+      'start_time': startTime.toIso8601String(),
+      'end_time': endTime?.toIso8601String(),
+      'is_synced': isSynced ? 1 : 0,
+      'notes': notes,
+    };
   }
 
   /// Converte uma [StudySession] em [StudySessionModel].
@@ -63,8 +80,13 @@ class StudySessionModel extends StudySession {
   /// - Copiar todos os campos da entidade
   /// - Retornar nova instância de StudySessionModel
   factory StudySessionModel.fromEntity(StudySession entity) {
-    // TODO: Implementar conversão da entidade para modelo
-    // Cópiar todos os campos diretos já que StudySessionModel estende StudySession
-    throw UnimplementedError('fromEntity() não implementado');
+    return StudySessionModel(
+      id: entity.id,
+      subject: entity.subject,
+      startTime: entity.startTime,
+      endTime: entity.endTime,
+      isSynced: entity.isSynced,
+      notes: entity.notes,
+    );
   }
 }

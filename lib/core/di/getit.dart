@@ -1,9 +1,11 @@
 import 'package:get_it/get_it.dart';
 
 import '../sql/database.dart';
-// TODO: uncomment after implementing data sources and repositories
-// import '../../features/domain/usecases/finish_and_save_session_locally_use_case.dart';
-// import '../../features/domain/usecases/get_local_study_history_use_case.dart';
+import '../../features/data/source/local_study_session_source.dart';
+import '../../features/data/repositories/study_session_repository_impl.dart';
+import '../../features/domain/repositories/study_session_repository.dart';
+import '../../features/domain/usecases/finish_and_save_session_locally_use_case.dart';
+import '../../features/domain/usecases/get_local_study_history_use_case.dart';
 import '../../features/domain/usecases/start_study_session_use_case.dart';
 
 /// Global service locator instance.
@@ -23,23 +25,26 @@ Future<void> setupLocator() async {
   sl.registerSingleton<DatabaseService>(DatabaseService());
 
   // ── Data Sources ──────────────────────────────────────────────────────────
-  // TODO: uncomment after implementing StudySessionLocalSourceImpl
-  // sl.registerLazySingleton<StudySessionLocalSource>(
-  //     () => StudySessionLocalSourceImpl(sl()));
+  sl.registerLazySingleton<LocalStudySessionSource>(
+    () => LocalStudySessionSourceImpl(databaseService: sl<DatabaseService>()),
+  );
 
   // ── Repositories ──────────────────────────────────────────────────────────
-  // TODO: uncomment after implementing StudySessionRepositoryImpl
-  // sl.registerLazySingleton<StudySessionRepository>(
-  //     () => StudySessionRepositoryImpl(sl()));
+  sl.registerLazySingleton<StudySessionRepository>(
+    () =>
+        StudySessionRepositoryImpl(localSource: sl<LocalStudySessionSource>()),
+  );
 
   // ── Use Cases ─────────────────────────────────────────────────────────────
   sl.registerFactory<StartStudySessionUseCase>(
     () => const StartStudySessionUseCase(),
   );
 
-  // TODO: uncomment after registering StudySessionRepository above
-  // sl.registerFactory<FinishAndSaveSessionLocallyUseCase>(
-  //     () => FinishAndSaveSessionLocallyUseCase(sl()));
-  // sl.registerFactory<GetLocalStudyHistoryUseCase>(
-  //     () => GetLocalStudyHistoryUseCase(sl()));
+  sl.registerFactory<FinishAndSaveSessionLocallyUseCase>(
+    () => FinishAndSaveSessionLocallyUseCase(sl<StudySessionRepository>()),
+  );
+
+  sl.registerFactory<GetLocalStudyHistoryUseCase>(
+    () => GetLocalStudyHistoryUseCase(sl<StudySessionRepository>()),
+  );
 }
