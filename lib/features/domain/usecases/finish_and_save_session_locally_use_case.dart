@@ -47,17 +47,13 @@ final class FinishAndSaveSessionLocallyUseCase
 
   @override
   Future<StudySession> call(FinishSessionParams params) async {
-    // TODO: Implementar finalização e persistência de sessão
-    // 1. Criar nova sessão completada a partir de params.activeSession:
-    //    - Manter id, subject, startTime
-    //    - Definir endTime: DateTime.now()
-    //    - Definir isSynced: false
-    //    - Definir notes: params.notes ?? params.activeSession.notes
-    //       (usar notas fornecidas ou manter as existentes)
-    // 2. Chamar _repository.saveSession(completed)
-    // 3. Retornar a sessão completada
-    // Nota: StudySession possivelmente tem um método copyWith() para copiar com alterações
-    throw UnimplementedError('call() não implementado');
+    final completed = params.activeSession.copyWith(
+      endTime: DateTime.now(),
+      isSynced: false,
+      notes: params.notes ?? params.activeSession.notes,
+    );
+
+    await _repository.saveSession(completed);
+    return completed;
   }
 }
-

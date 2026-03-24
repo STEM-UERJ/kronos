@@ -1,3 +1,4 @@
+import 'package:kronos/features/data/model/study_session_model.dart';
 import 'package:kronos/features/domain/entities/study_session.dart';
 import 'package:kronos/features/domain/repositories/study_session_repository.dart';
 import 'package:kronos/features/data/source/local_study_session_source.dart';
@@ -20,37 +21,26 @@ class StudySessionRepositoryImpl implements StudySessionRepository {
 
   @override
   Future<void> saveSession(StudySession session) async {
-    // TODO: Implementar persistência de sessão
-    // 1. Converter StudySession em StudySessionModel usando fromEntity()
-    // 2. Chamar localSource.saveSession(model)
-    // 3. Tratar exceções apropriadamente
-    throw UnimplementedError('saveSession() não implementado');
+    final sessionToSave = session.copyWith(isSynced: false);
+    final model = StudySessionModel.fromEntity(sessionToSave);
+    await localSource.saveSession(model);
   }
 
   @override
   Future<List<StudySession>> getAllSessions() async {
-    // TODO: Implementar recuperação de todas as sessões
-    // 1. Chamar localSource.getAllSessions()
-    // 2. Converter List<StudySessionModel> para List<StudySession>
-    // 3. Retornar lista (já que StudySessionModel estende StudySession, pode retornar direto)
-    // 4. Tratar exceções
-    throw UnimplementedError('getAllSessions() não implementado');
+    final sessions = await localSource.getAllSessions();
+    sessions.sort((a, b) => b.startTime.compareTo(a.startTime));
+    return sessions;
   }
 
   @override
   Future<List<StudySession>> getUnsyncedSessions() async {
-    // TODO: Implementar recuperação de sessões não sincronizadas
-    // 1. Chamar getAllSessions()
-    // 2. Filtrar apenas sessões onde isSynced == false
-    // 3. Retornar lista filtrada
-    throw UnimplementedError('getUnsyncedSessions() não implementado');
+    final sessions = await localSource.getAllSessions();
+    return sessions.where((session) => !session.isSynced).toList();
   }
 
   @override
   Future<void> markAsSynced(String sessionId) async {
-    // TODO: Implementar marcação de sincronização
-    // 1. Chamar localSource.updateSync(sessionId, true)
-    // 2. Tratar exceções
-    throw UnimplementedError('markAsSynced() não implementado');
+    await localSource.updateSync(sessionId, true);
   }
 }

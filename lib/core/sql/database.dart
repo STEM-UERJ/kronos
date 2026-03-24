@@ -32,9 +32,10 @@ class DatabaseService {
         id TEXT PRIMARY KEY,
         subject TEXT NOT NULL,
         start_time TEXT NOT NULL,
-        end_time TEXT NOT NULL,
+        end_time TEXT,
         is_synced INTEGER NOT NULL DEFAULT 0,
-        notes TEXT
+        notes TEXT,
+        created_at INTEGER DEFAULT (strftime('%s', 'now') * 1000)
       )
     ''');
   }

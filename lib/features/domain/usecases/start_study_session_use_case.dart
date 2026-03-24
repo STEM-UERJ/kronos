@@ -39,16 +39,15 @@ final class StartStudySessionUseCase
 
   @override
   Future<StudySession> call(StartSessionParams params) async {
-    // TODO: Implementar inicialização de nova sessão
-    // 1. Gerar ID único baseado em timestamp ou usar uuid package
-    // 2. Criar StudySession com:
-    //    - id: ID gerado
-    //    - subject: params.subject
-    //    - startTime: DateTime.now()
-    //    - endTime: null
-    //    - isSynced: false
-    //    - notes: params.notes
-    // 3. Retornar a sessão criada
-    throw UnimplementedError('call() não implementado');
+    final id = DateTime.now().microsecondsSinceEpoch.toString();
+    final session = StudySession(
+      id: id,
+      subject: params.subject,
+      startTime: DateTime.now(),
+      endTime: null,
+      isSynced: false,
+      notes: params.notes,
+    );
+    return session;
   }
 }
