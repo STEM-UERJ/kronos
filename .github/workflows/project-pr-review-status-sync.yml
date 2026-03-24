@@ -1,0 +1,265 @@
+name: Sync Project Status From PR Lifecycle
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - dev
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - synchronize
+      - closed
+  pull_request_review:
+    types:
+      - submitted
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+  repository-projects: write
+
+jobs:
+  sync-pr-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync issue cards by PR and review events
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.PROJECT_AUTOMATION_TOKEN || github.token }}
+          script: |
+            const org = "STEM-UERJ";
+            const repoOwner = "STEM-UERJ";
+            const repoName = "kronos";
+            const projectNumber = 3;
+
+            const normalize = (v) => (v || "").trim().toLowerCase();
+
+            const eventName = context.eventName;
+            const payload = context.payload;
+
+            const pr = payload.pull_request;
+            if (!pr) {
+              core.info("No pull request payload found. Nothing to do.");
+              return;
+            }
+
+            if (normalize(pr.base?.ref) !== "dev") {
+              core.info(`PR base is '${pr.base?.ref}', not 'dev'. Skipping.`);
+              return;
+            }
+
+            let targetStatusNames = null;
+
+            if (eventName === "pull_request") {
+              const action = payload.action;
+              if (["opened", "reopened", "ready_for_review", "synchronize"].includes(action)) {
+                targetStatusNames = ["In Review", "In review"];
+              } else if (action === "closed" && pr.merged) {
+                targetStatusNames = ["Done"];
+              } else {
+                core.info(`PR action '${action}' does not require status update.`);
+                return;
+              }
+            }
+
+            if (eventName === "pull_request_review") {
+              const reviewState = normalize(payload.review?.state);
+              if (reviewState === "changes_requested") {
+                targetStatusNames = ["In Progress", "In progress"];
+              } else if (reviewState === "approved") {
+                // Approval means it can proceed to merge; final transition to Done is applied on merge.
+                core.info("Review approved. Waiting for merge event to move card to Done.");
+                return;
+              } else {
+                core.info(`Review state '${payload.review?.state}' does not require status update.`);
+                return;
+              }
+            }
+
+            let projectData;
+            try {
+              projectData = await github.graphql(
+                `query($org: String!, $number: Int!) {
+                  organization(login: $org) {
+                    projectV2(number: $number) {
+                      id
+                      fields(first: 100) {
+                        nodes {
+                          __typename
+                          ... on ProjectV2SingleSelectField {
+                            id
+                            name
+                            options {
+                              id
+                              name
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }`,
+                { org, number: projectNumber }
+              );
+            } catch (error) {
+              core.setFailed(
+                "Cannot access organization project. Ensure PROJECT_AUTOMATION_TOKEN has org Projects read/write access."
+              );
+              return;
+            }
+
+            const project = projectData.organization?.projectV2;
+            if (!project) {
+              core.setFailed("Project not found.");
+              return;
+            }
+
+            const statusField = project.fields.nodes.find(
+              (f) => f.__typename === "ProjectV2SingleSelectField" && normalize(f.name) === "status"
+            );
+
+            if (!statusField) {
+              core.setFailed("Status field not found in project.");
+              return;
+            }
+
+            const targetOption = statusField.options.find((o) =>
+              targetStatusNames.map(normalize).includes(normalize(o.name))
+            );
+
+            if (!targetOption) {
+              core.setFailed(
+                `Target status option not found in project: ${targetStatusNames.join(" / ")}.`
+              );
+              return;
+            }
+
+            const prData = await github.graphql(
+              `query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $number) {
+                    number
+                    title
+                    body
+                    closingIssuesReferences(first: 50) {
+                      nodes {
+                        number
+                      }
+                    }
+                  }
+                }
+              }`,
+              { owner: repoOwner, repo: repoName, number: pr.number }
+            );
+
+            const prNode = prData.repository?.pullRequest;
+            const issueNumbers = new Set(
+              (prNode?.closingIssuesReferences?.nodes || []).map((n) => n.number)
+            );
+
+            // Fallback if PR does not use closing keywords.
+            if (issueNumbers.size === 0) {
+              const text = `${prNode?.title || ""}\n${prNode?.body || ""}`;
+              const matches = text.match(/#(\d+)/g) || [];
+              for (const m of matches) {
+                issueNumbers.add(Number(m.replace("#", "")));
+              }
+            }
+
+            if (issueNumbers.size === 0) {
+              core.warning("No referenced issues found in PR. Use closing keywords like 'Closes #123'.");
+              return;
+            }
+
+            const itemsByIssueNumber = new Map();
+            let cursor = null;
+            let hasNextPage = true;
+
+            while (hasNextPage) {
+              const itemsData = await github.graphql(
+                `query($org: String!, $number: Int!, $after: String) {
+                  organization(login: $org) {
+                    projectV2(number: $number) {
+                      items(first: 100, after: $after) {
+                        nodes {
+                          id
+                          content {
+                            __typename
+                            ... on Issue {
+                              number
+                              repository {
+                                name
+                                owner {
+                                  login
+                                }
+                              }
+                            }
+                          }
+                        }
+                        pageInfo {
+                          hasNextPage
+                          endCursor
+                        }
+                      }
+                    }
+                  }
+                }`,
+                { org, number: projectNumber, after: cursor }
+              );
+
+              const items = itemsData.organization.projectV2.items;
+              for (const item of items.nodes) {
+                if (item.content?.__typename !== "Issue") continue;
+
+                const issue = item.content;
+                const sameRepo =
+                  normalize(issue.repository.owner.login) === normalize(repoOwner) &&
+                  normalize(issue.repository.name) === normalize(repoName);
+                if (!sameRepo) continue;
+
+                itemsByIssueNumber.set(issue.number, item.id);
+              }
+
+              hasNextPage = items.pageInfo.hasNextPage;
+              cursor = items.pageInfo.endCursor;
+            }
+
+            let updated = 0;
+            for (const issueNumber of issueNumbers) {
+              const itemId = itemsByIssueNumber.get(issueNumber);
+              if (!itemId) {
+                core.warning(`Issue #${issueNumber} is not in project #${projectNumber}.`);
+                continue;
+              }
+
+              await github.graphql(
+                `mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                  updateProjectV2ItemFieldValue(
+                    input: {
+                      projectId: $projectId
+                      itemId: $itemId
+                      fieldId: $fieldId
+                      value: { singleSelectOptionId: $optionId }
+                    }
+                  ) {
+                    projectV2Item {
+                      id
+                    }
+                  }
+                }`,
+                {
+                  projectId: project.id,
+                  itemId,
+                  fieldId: statusField.id,
+                  optionId: targetOption.id,
+                }
+              );
+
+              core.info(`Issue #${issueNumber} moved to '${targetOption.name}'.`);
+              updated += 1;
+            }
+
+            core.info(`Done. Updated ${updated} issue card(s).`);

@@ -18,6 +18,6 @@ final class GetLocalStudyHistoryUseCase
   const GetLocalStudyHistoryUseCase(this._repository);
 
   @override
-  Future<List<StudySession>> call(NoParams params) =>
-      _repository.getAllSessions();
+  Future<List<StudySession>> call(NoParams params) async =>
+      await _repository.getAllSessions();
 }

@@ -22,15 +22,16 @@ Future<void> setupLocator() async {
   // ── Core ──────────────────────────────────────────────────────────────────
   sl.registerSingleton<DatabaseService>(DatabaseService());
 
+  //s1.getIt<StudySessionLocalSource>()
   // ── Data Sources ──────────────────────────────────────────────────────────
   // TODO: uncomment after implementing StudySessionLocalSourceImpl
   // sl.registerLazySingleton<StudySessionLocalSource>(
-  //     () => StudySessionLocalSourceImpl(sl()));
+  //     () => StudySessionLocalSourceImpl(s1.getIt<DtabaseService>()));
 
   // ── Repositories ──────────────────────────────────────────────────────────
   // TODO: uncomment after implementing StudySessionRepositoryImpl
   // sl.registerLazySingleton<StudySessionRepository>(
-  //     () => StudySessionRepositoryImpl(sl()));
+  //     () => StudySessionRepositoryImpl(s1.getIt<StudySessionLocalSource>()));
 
   // ── Use Cases ─────────────────────────────────────────────────────────────
   sl.registerFactory<StartStudySessionUseCase>(
