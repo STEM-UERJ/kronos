@@ -5,41 +5,29 @@ import 'package:kronos/features/domain/repositories/study_session_repository.dar
 import 'package:kronos/features/domain/usecases/get_local_study_history_use_case.dart';
 import 'package:kronos/features/presenter/history/logic/history_cubit.dart';
 import 'package:kronos/features/presenter/history/logic/history_state.dart';
+import 'package:mocktail/mocktail.dart';
 
-class FakeStudySessionRepository implements StudySessionRepository {
-  final List<StudySession> _storage;
-
-  FakeStudySessionRepository([this._storage = const []]);
-
-  @override
-  Future<void> saveSession(StudySession session) async {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<StudySession>> getAllSessions() async {
-    return _storage;
-  }
-
-  @override
-  Future<List<StudySession>> getUnsyncedSessions() async {
-    return _storage.where((s) => !s.isSynced).toList();
-  }
-
-  @override
-  Future<void> markAsSynced(String sessionId) async {
-    throw UnimplementedError();
-  }
-}
+class MockStudySessionRepository extends Mock implements StudySessionRepository {}
 
 void main() {
   group('HistoryCubit', () {
-    test('initial state is HistoryInitial', () {
-      final useCase = GetLocalStudyHistoryUseCase(FakeStudySessionRepository());
-      final cubit = HistoryCubit(getHistoryUseCase: useCase);
+    late HistoryCubit historyCubit;
+    late GetLocalStudyHistoryUseCase getLocalStudyHistoryUseCase;
+    late MockStudySessionRepository mockStudySessionRepository;
 
-      expect(cubit.state, isA<HistoryInitial>());
-      cubit.close();
+    setUp(() {
+      mockStudySessionRepository = MockStudySessionRepository();
+      getLocalStudyHistoryUseCase =
+          GetLocalStudyHistoryUseCase(mockStudySessionRepository);
+      historyCubit = HistoryCubit(getHistoryUseCase: getLocalStudyHistoryUseCase);
+    });
+
+    tearDown(() {
+      historyCubit.close();
+    });
+
+    test('initial state is HistoryInitial', () {
+      expect(historyCubit.state, isA<HistoryInitial>());
     });
 
     blocTest<HistoryCubit, HistoryState>(
@@ -55,10 +43,9 @@ void main() {
             notes: 'teste',
           ),
         ];
-        final useCase = GetLocalStudyHistoryUseCase(
-          FakeStudySessionRepository(stored),
-        );
-        return HistoryCubit(getHistoryUseCase: useCase);
+        when(() => mockStudySessionRepository.getAllSessions())
+            .thenAnswer((_) async => stored);
+        return historyCubit;
       },
       act: (cubit) => cubit.loadHistory(),
       expect: () => [isA<HistoryLoading>(), isA<HistoryLoaded>()],
@@ -68,22 +55,22 @@ void main() {
         final sessions = (state as HistoryLoaded).sessions;
         expect(sessions, hasLength(1));
         expect(sessions.first.subject, 'Flutter');
+        verify(() => mockStudySessionRepository.getAllSessions()).called(1);
       },
     );
 
     blocTest<HistoryCubit, HistoryState>(
       'emits [HistoryLoading, HistoryError] when usecase throws',
       build: () {
-        final repo = FakeStudySessionRepository();
-        final useCase = GetLocalStudyHistoryUseCase(repo);
-        return HistoryCubit(getHistoryUseCase: useCase);
+        when(() => mockStudySessionRepository.getAllSessions())
+            .thenThrow(Exception('Database error'));
+        return historyCubit;
       },
-      act: (cubit) async {
-        // Forcing exception by calling on a repository that throws.
-        await cubit.loadHistory();
-      },
+      act: (cubit) => cubit.loadHistory(),
       expect: () => [isA<HistoryLoading>(), isA<HistoryError>()],
-      skip: 1,
+      verify: (cubit) {
+        verify(() => mockStudySessionRepository.getAllSessions()).called(1);
+      },
     );
   });
 }
