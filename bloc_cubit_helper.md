@@ -1,7 +1,7 @@
 # Bloc / Cubit Helper — Kronos
 
-> Kronos usa **flutter_bloc** com **Cubit** como padrão de estado.  
-> Cubit é um subconjunto do Bloc: sem eventos explícitos, apenas métodos que chamam `emit()`.  
+> Kronos usa **flutter_bloc** com **Cubit** como padrão de estado.
+> Cubit é um subconjunto do Bloc: sem eventos explícitos, apenas métodos que chamam `emit()`.
 > Use Bloc (com eventos) apenas quando a lógica de transição de estado for complexa o suficiente para exigir `on<Event>`.
 
 ---

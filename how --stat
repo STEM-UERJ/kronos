@@ -1,0 +1,118 @@
+[33mcommit 6bcf9739814e6ee3a6872555a22827b2ef925786[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32m9-sprint-1-implementar-timercubit-e-timerstate-com-fluxo-startpauseresumefinish[m[33m)[m
+Author: ianseventeen <ianmoraiscosta@gmail.com>
+Date:   Tue Apr 7 21:06:36 2026 -0300
+
+    chore: ignora diretório node_modules do figma/ui
+
+[33mcommit d53009a05f97a22f89bd24c8e03b10d3f1967029[m
+Author: ianseventeen <ianmoraiscosta@gmail.com>
+Date:   Tue Apr 7 20:21:34 2026 -0300
+
+    feat: timer_cubit and timer_state implemented
+
+[33mcommit 1a54a73257cbe4f3f14c512707a7c16294fbcce1[m[33m ([m[1;31morigin/8-sprint-1-criar-suíte-inicial-de-testes-de-domínio-e-cubits[m[33m, [m[1;31morigin/7-sprint-1-construir-tela-timer-funcional-conectada-ao-cubit[m[33m, [m[1;31morigin/6-sprint-1-implementar-historycubithistorystate-e-carregar-histórico-local[m[33m, [m[1;31morigin/27-sprint-1-implementar-homepage-inicial-e-navegação-para-fluxo-local[m[33m, [m[1;31morigin/23-sprint-1---planejamento-fundamentos-de-domínio-dados-locais-e-estado[m[33m, [m[1;32mdev[m[33m)[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Tue Mar 24 20:54:34 2026 -0300
+
+    Update README.md
+
+[33mcommit 38ee65858f11db8adeddd5345a9c75a955747e22[m
+Merge: 52b77a3 4d7a523
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Tue Mar 24 18:42:20 2026 -0300
+
+    Merge pull request #28 from STEM-UERJ/5-sprint-1-estruturar-camada-data-e-di-da-feature-de-sessões-de-estudo
+    
+    feat/ di implemented and created tests
+
+[33mcommit 4d7a523bd47a3b7f063fe3b46edb25a4e6855e8f[m[33m ([m[1;31morigin/5-sprint-1-estruturar-camada-data-e-di-da-feature-de-sessões-de-estudo[m[33m)[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <daniel_academico1998@hotmail.com>
+Date:   Tue Mar 24 02:36:57 2026 -0300
+
+    feat/ di implemented and created tests
+
+[33mcommit 52b77a30d4bab051fd25611adc9cb8a5d4ba9350[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Mon Mar 23 16:56:39 2026 -0300
+
+    ci(project): make prioritized backlog dynamic by parent status
+
+[33mcommit 03cd89c217d861fa3624db8e5fa87d05ace29fbf[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Mon Mar 23 15:35:55 2026 -0300
+
+    Use PR/review/merge events for project status sync (no push trigger)
+
+[33mcommit c2812f7d2e449e57e74be454e828dcf1752cc969[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Mon Mar 23 15:27:24 2026 -0300
+
+    Trigger parent/sub-issues sync on dev pushes
+
+[33mcommit 463bfda9bf708f215ca413408f423f95b42b035f[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Mon Mar 23 15:15:03 2026 -0300
+
+    Extend project sync automation to parent issues #22-#25
+
+[33mcommit b000a95105e5733e88960241225786d71d07bb6c[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Mon Mar 23 15:12:03 2026 -0300
+
+    Improve project sync workflow compatibility and token guidance
+
+[33mcommit 646aeed1c4af911e33a1479c5ba37ab73e787721[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Mon Mar 23 15:08:55 2026 -0300
+
+    Add project automation for parent/sub-issues status sync (#23)
+
+[33mcommit 387a76ddb45688fa023bbcd03083c2c57f50f881[m
+Merge: ce23d37 bfca84c
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Sat Mar 14 09:36:50 2026 -0300
+
+    Merge pull request #3 from STEM-UERJ/feat/up_help_in_code
+    
+    feat/ up_figma
+
+[33mcommit bfca84ce2949a0f2fa02182737be9a5b30c555a3[m[33m ([m[1;31morigin/feat/up_help_in_code[m[33m)[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <daniel_academico1998@hotmail.com>
+Date:   Sat Mar 14 02:13:37 2026 -0300
+
+    feat/ up_figma
+
+[33mcommit ce23d37bf5d5070b3e78f3f5145953c160726c12[m
+Merge: 1de7abe 0780bb9
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Thu Mar 12 16:00:55 2026 -0300
+
+    Merge pull request #1 from STEM-UERJ/feat/up_help_in_code
+    
+    feat: up help in code and build a simple structure
+
+[33mcommit 0780bb9c913f02afefb496efc860834c99fd9a24[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <daniel_academico1998@hotmail.com>
+Date:   Thu Mar 12 11:55:22 2026 -0300
+
+    feat: up help in code and build a simple structure
+
+[33mcommit 1de7abe2ae0c8db7df1fa364839d08ec1a3446cb[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <daniel_academico1998@hotmail.com>
+Date:   Thu Mar 12 11:09:40 2026 -0300
+
+    feat: Add Windows runner for Flutter application
+    
+    - Implemented CMake configuration for building the Flutter application on Windows.
+    - Created generated_plugin_registrant files for plugin registration.
+    - Added support for the flutter_secure_storage_windows plugin.
+    - Developed the main application entry point and window management using Win32 API.
+    - Included resource files for application icon and versioning.
+    - Established utility functions for console management and command line argument handling.
+    - Ensured DPI awareness and dark mode support for the application window.
+
+[33mcommit ae7ce4cf7109721be2b45a2c710b96b2b49a2a15[m
+Author: Daniel Brown Rodrigues Mingozzi dos Passos <119956376+DanielBrown1998@users.noreply.github.com>
+Date:   Thu Mar 12 09:21:16 2026 -0300
+
+    Initial commit
