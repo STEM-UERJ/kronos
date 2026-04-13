@@ -1,0 +1,9 @@
+[33mcommit 6bcf9739814e6ee3a6872555a22827b2ef925786[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32m9-sprint-1-implementar-timercubit-e-timerstate-com-fluxo-startpauseresumefinish[m[33m)[m
+Author: ianseventeen <ianmoraiscosta@gmail.com>
+Date:   Tue Apr 7 21:06:36 2026 -0300
+
+    chore: ignora diretório node_modules do figma/ui
+
+ .gitignore           | 1 [32m+[m
+ bloc_cubit_helper.md | 4 [32m++[m[31m--[m
+ 2 files changed, 3 insertions(+), 2 deletions(-)
