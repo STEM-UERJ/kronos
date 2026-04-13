@@ -34,49 +34,71 @@ class FakeStudySessionRepository implements StudySessionRepository {
     }
   }
 }
-
 void main() {
-  group('TimerCubit', () {
-    late StartStudySessionUseCase startUseCase;
-    late FinishAndSaveSessionLocallyUseCase finishUseCase;
-    late FakeStudySessionRepository repo;
+  late FakeStudySessionRepository fakeRepo;
+  late StartStudySessionUseCase startUseCase;
+  late FinishAndSaveSessionLocallyUseCase finishUseCase;
+  late TimerCubit cubit;
 
-    setUp(() {
-      repo = FakeStudySessionRepository();
-      startUseCase = const StartStudySessionUseCase();
-      finishUseCase = FinishAndSaveSessionLocallyUseCase(repo);
+  // O setUp roda antes de CADA teste para garantir um ambiente limpo
+  setUp(() {
+    fakeRepo = FakeStudySessionRepository();
+    startUseCase = const StartStudySessionUseCase();
+    finishUseCase = FinishAndSaveSessionLocallyUseCase(fakeRepo);
+
+    cubit = TimerCubit(
+      startSessionUseCase: startUseCase,
+      finishSessionUseCase: finishUseCase,
+    );
+  });
+
+  // O tearDown roda após CADA teste para limpar a memória (cancelar o _timer)
+  tearDown(() {
+    cubit.close();
+  });
+
+  group('TimerCubit |', () {
+    test('O estado inicial deve ser TimerIdle', () {
+      expect(cubit.state, isA<TimerIdle>());
     });
 
-    test('initial state is TimerInitial', () {
-      final cubit = TimerCubit(
-        startSessionUseCase: startUseCase,
-        finishSessionUseCase: finishUseCase,
-      );
-
-      expect(cubit.state, isA<TimerInitial>());
-      cubit.close();
-    });
-
+    // Este é o teste exigido na "Definição de Pronto" da sua Sprint
     blocTest<TimerCubit, TimerState>(
-      'should emit [TimerRunning] when startTimer is called',
-      build: () => TimerCubit(
-        startSessionUseCase: startUseCase,
-        finishSessionUseCase: finishUseCase,
-      ),
-      act: (cubit) => cubit.startTimer('Flutter'),
-      wait: const Duration(milliseconds: 5),
-      expect: () => [isA<TimerRunning>()],
-      verify: (cubit) {
-        final state = cubit.state;
-        expect(state, isA<TimerRunning>());
-        if (state is TimerRunning) {
-          expect(state.subject, 'Flutter');
-          expect(state.secondsElapsed, greaterThanOrEqualTo(0));
-        }
+      'Fluxo completo: start -> pause -> resume -> finish',
+      build: () => cubit,
+      act: (cubit) async {
+        // ATENÇÃO: Se no seu TimerCubit o método se chama "startTimer",
+        // mude o nome aqui, ou renomeie lá no Cubit para "start" (como pede a Sprint)
+        await cubit.startTimer('Flutter');
+
+        cubit.togglePause(); // Pausa
+        cubit.togglePause(); // Retoma
+
+        // ATENÇÃO: Se no seu TimerCubit o método se chama "finishSession",
+        // mude o nome aqui ou renomeie lá no Cubit para "finish"
+        await cubit.finishSession(notes: 'Sprint concluída!');
+      },
+      expect: () => [
+        // 1. Estado ao iniciar
+        isA<TimerRunning>().having((state) => state.isPaused, 'isPaused', false),
+
+        // 2. Estado ao pausar
+        isA<TimerRunning>().having((state) => state.isPaused, 'isPaused', true),
+
+        // 3. Estado ao retomar
+        isA<TimerRunning>().having((state) => state.isPaused, 'isPaused', false),
+
+        // 4. Estado ao finalizar
+        isA<TimerFinished>(),
+      ],
+      verify: (_) async {
+        // Verifica no seu FakeRepo se a sessão foi realmente salva no final
+        final sessoes = await fakeRepo.getAllSessions();
+        expect(sessoes.length, 1);
+        expect(sessoes.first.subject, 'Flutter');
+        expect(sessoes.first.isCompleted, true);
+        expect(sessoes.first.notes, 'Sprint concluída!');
       },
     );
-
-    // future test cases for TimerCubit actions (pause/resume/finish) should be added here
-    // after collaborators implement the full behavior in TimerCubit.
   });
 }
