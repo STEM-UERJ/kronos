@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "build:figma": "vite build --outDir dist/figma && node ./scripts/build-figma-plugin.js",
     "dev": "vite"
   },
   "dependencies": {

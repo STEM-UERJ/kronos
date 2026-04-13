@@ -8,4 +8,12 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
+
+  ## Building a Figma plugin package
+
+  1. Run `npm run build:figma`
+  2. In Figma, go to **Plugins → Development → Import plugin from manifest...**
+  3. Select `figma/ui/dist/figma/manifest.json`
+
+  After importing, you can run the plugin from **Plugins → Development**.
   

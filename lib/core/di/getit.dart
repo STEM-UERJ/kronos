@@ -1,10 +1,10 @@
 import 'package:get_it/get_it.dart';
 
-import '../sql/database.dart';
-// TODO: uncomment after implementing data sources and repositories
-// import '../../features/domain/usecases/finish_and_save_session_locally_use_case.dart';
-// import '../../features/domain/usecases/get_local_study_history_use_case.dart';
-import '../../features/domain/usecases/start_study_session_use_case.dart';
+import 'package:kronos/core/sql/database.dart';
+import 'package:kronos/features/config/di/config_di.dart';
+import 'package:kronos/features/history/di/history_di.dart';
+import 'package:kronos/features/home/di/home_di.dart';
+import 'package:kronos/features/timer/di/timer_di.dart';
 
 /// Global service locator instance.
 ///
@@ -19,28 +19,12 @@ final sl = GetIt.instance;
 /// runApp(const KronosApp());
 /// ```
 Future<void> setupLocator() async {
-  // ── Core ──────────────────────────────────────────────────────────────────
-  sl.registerSingleton<DatabaseService>(DatabaseService());
+  if (!sl.isRegistered<DatabaseService>()) {
+    sl.registerLazySingleton<DatabaseService>(DatabaseService.new);
+  }
 
-  //s1.getIt<StudySessionLocalSource>()
-  // ── Data Sources ──────────────────────────────────────────────────────────
-  // TODO: uncomment after implementing StudySessionLocalSourceImpl
-  // sl.registerLazySingleton<StudySessionLocalSource>(
-  //     () => StudySessionLocalSourceImpl(s1.getIt<DtabaseService>()));
-
-  // ── Repositories ──────────────────────────────────────────────────────────
-  // TODO: uncomment after implementing StudySessionRepositoryImpl
-  // sl.registerLazySingleton<StudySessionRepository>(
-  //     () => StudySessionRepositoryImpl(s1.getIt<StudySessionLocalSource>()));
-
-  // ── Use Cases ─────────────────────────────────────────────────────────────
-  sl.registerFactory<StartStudySessionUseCase>(
-    () => const StartStudySessionUseCase(),
-  );
-
-  // TODO: uncomment after registering StudySessionRepository above
-  // sl.registerFactory<FinishAndSaveSessionLocallyUseCase>(
-  //     () => FinishAndSaveSessionLocallyUseCase(sl()));
-  // sl.registerFactory<GetLocalStudyHistoryUseCase>(
-  //     () => GetLocalStudyHistoryUseCase(sl()));
+  setupConfigFeatureDI(sl);
+  setupHomeFeatureDI(sl);
+  setupTimerFeatureDI(sl);
+  setupHistoryFeatureDI(sl);
 }
