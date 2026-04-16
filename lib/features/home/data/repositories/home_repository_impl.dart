@@ -1,4 +1,4 @@
-import 'package:kronos/core/contracts/use_case_contract.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../domain/entities/home_entities.dart';
 import '../../domain/repositories/home_repository.dart';
@@ -9,23 +9,33 @@ final class HomeRepositoryImpl implements HomeRepository {
 
   HomeRepositoryImpl({required HomeSource source}) : _source = source;
 
-  Never _notImplemented() {
-    final _ = _source;
-    throw UnimplementedError();
+  @override
+  AsyncResult<HomeDashboard> getDashboard() async {
+    try {
+      final result = await _source.getDashboard();
+      return Success(result);
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 
   @override
-  AsyncResult<HomeDashboard> getDashboard() {
-    return _notImplemented();
+  AsyncResult<HomeDashboard> refreshDashboard() async {
+    try {
+      final result = await _source.refreshDashboard();
+      return Success(result);
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 
   @override
-  AsyncResult<HomeDashboard> refreshDashboard() {
-    return _notImplemented();
-  }
-
-  @override
-  AsyncResult<HomeSyncStatus> getSyncStatus() {
-    return _notImplemented();
+  AsyncResult<HomeSyncStatus> getSyncStatus() async {
+    try {
+      final result = await _source.getSyncStatus();
+      return Success(result);
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/contracts/use_case_contract.dart';
 import '../../domain/entities/config_entities.dart';
@@ -33,26 +34,20 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
     on<ConfigSyncRequested>(_onSyncRequested);
   }
 
+  ConfigState error(Exception e) =>
+      ConfigFailure((e as ConfigDomainError).message);
+
   Future<void> _onStarted(
     ConfigStarted event,
     Emitter<ConfigState> emit,
   ) async {
     emit(const ConfigLoading());
-
-    try {
-      final GithubToken token = await _getSavedGithubTokenUseCase(
-        const NoParams(),
-      );
-      emit(
-        ConfigLoaded(
-          token: token.status == GithubTokenStatus.missing ? null : token,
-        ),
-      );
-    } on ConfigDomainError catch (error) {
-      emit(ConfigFailure(error.message));
-    } catch (_) {
-      emit(const ConfigFailure('Failed to load settings.'));
-    }
+    await _getSavedGithubTokenUseCase(const NoParams()).fold((success) {
+      final token = success.status == GithubTokenStatus.missing
+          ? null
+          : success;
+      emit(ConfigLoaded(token: token));
+    }, (e) => emit(error(e)));
   }
 
   Future<void> _onSaveTokenRequested(
@@ -66,14 +61,11 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
       status: GithubTokenStatus.configured,
     );
 
-    try {
-      await _saveGithubTokenUseCase(SaveGithubTokenParams(token: event.token));
+    await _saveGithubTokenUseCase(
+      SaveGithubTokenParams(token: event.token),
+    ).fold((success) {
       emit(ConfigLoaded(token: token));
-    } on ConfigDomainError catch (error) {
-      emit(ConfigFailure(error.message));
-    } catch (_) {
-      emit(const ConfigFailure('Failed to save token.'));
-    }
+    }, (e) => emit(error(e)));
   }
 
   Future<void> _onValidateTokenRequested(
@@ -86,18 +78,11 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
       value: event.token,
       status: GithubTokenStatus.configured,
     );
-
-    try {
-      final TokenValidationResult validation =
-          await _validateGithubTokenUseCase(
-            ValidateGithubTokenParams(token: event.token),
-          );
-      emit(ConfigLoaded(token: token, validation: validation));
-    } on ConfigDomainError catch (error) {
-      emit(ConfigFailure(error.message));
-    } catch (_) {
-      emit(const ConfigFailure('Failed to validate token.'));
-    }
+    await _validateGithubTokenUseCase(
+      ValidateGithubTokenParams(token: event.token),
+    ).fold((success) {
+      emit(ConfigLoaded(token: token, validation: success));
+    }, (e) => emit(error(e)));
   }
 
   Future<void> _onClearTokenRequested(
@@ -105,14 +90,9 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
     Emitter<ConfigState> emit,
   ) async {
     emit(const ConfigLoading());
-    try {
-      await _clearGithubTokenUseCase(const NoParams());
+    await _clearGithubTokenUseCase(const NoParams()).fold((success) {
       emit(const ConfigLoaded());
-    } on ConfigDomainError catch (error) {
-      emit(ConfigFailure(error.message));
-    } catch (_) {
-      emit(const ConfigFailure('Failed to clear token.'));
-    }
+    }, (e) => emit(error(e)));
   }
 
   Future<void> _onSyncRequested(
@@ -120,15 +100,8 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
     Emitter<ConfigState> emit,
   ) async {
     emit(const ConfigLoading());
-    try {
-      final SyncResult syncResult = await _syncPendingSessionsUseCase(
-        const NoParams(),
-      );
-      emit(ConfigLoaded(lastSyncResult: syncResult));
-    } on ConfigDomainError catch (error) {
-      emit(ConfigFailure(error.message));
-    } catch (_) {
-      emit(const ConfigFailure('Failed to sync sessions.'));
-    }
+    await _syncPendingSessionsUseCase(const NoParams()).fold((success) {
+      emit(ConfigLoaded(lastSyncResult: success));
+    }, (e) => emit(error(e)));
   }
 }

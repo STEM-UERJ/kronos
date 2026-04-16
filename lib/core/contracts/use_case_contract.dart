@@ -1,5 +1,4 @@
-typedef AsyncResult<T> = Future<T>;
-typedef Result<T> = T;
+import 'package:result_dart/result_dart.dart';
 
 abstract class UseCaseParams {
   const UseCaseParams();
@@ -9,6 +8,8 @@ final class NoParams extends UseCaseParams {
   const NoParams();
 }
 
-abstract class UseCase<TOutput, TParams extends UseCaseParams> {
-  AsyncResult<TOutput> call(TParams params);
+final class UseCaseOutput extends Object {}
+
+abstract class UseCase<T extends Object, Input> {
+  AsyncResult<T> call(Input input);
 }

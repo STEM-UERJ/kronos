@@ -1,4 +1,4 @@
-import 'package:kronos/core/contracts/use_case_contract.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../entities/config_entities.dart';
 

@@ -46,9 +46,10 @@ void main() {
 
       final result = await repository.getDashboard();
 
-      expect(result.greeting, 'Bom dia');
-      expect(result.todayTotalMinutes, 90);
-      expect(result.syncStatus, HomeSyncStatus.synced);
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull()!.greeting, 'Bom dia');
+      expect(result.getOrNull()!.todayTotalMinutes, 90);
+      expect(result.getOrNull()!.syncStatus, HomeSyncStatus.synced);
       verify(source.getDashboard()).called(1);
     });
 
@@ -57,7 +58,10 @@ void main() {
         (_) => Future<HomeDashboard>.error(Exception('dashboard-failed')),
       );
 
-      expect(repository.getDashboard(), throwsA(isA<Exception>()));
+      final result = await repository.getDashboard();
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
       verify(source.getDashboard()).called(1);
     });
 
@@ -66,8 +70,9 @@ void main() {
 
       final result = await repository.refreshDashboard();
 
-      expect(result.greeting, 'Bom dia');
-      expect(result.todaySessionsCount, 2);
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull()!.greeting, 'Bom dia');
+      expect(result.getOrNull()!.todaySessionsCount, 2);
       verify(source.refreshDashboard()).called(1);
     });
 
@@ -76,7 +81,10 @@ void main() {
         (_) => Future<HomeDashboard>.error(Exception('refresh-failed')),
       );
 
-      expect(repository.refreshDashboard(), throwsA(isA<Exception>()));
+      final result = await repository.refreshDashboard();
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
       verify(source.refreshDashboard()).called(1);
     });
 
@@ -87,7 +95,8 @@ void main() {
 
       final result = await repository.getSyncStatus();
 
-      expect(result, HomeSyncStatus.pending);
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull(), HomeSyncStatus.pending);
       verify(source.getSyncStatus()).called(1);
     });
 
@@ -96,7 +105,10 @@ void main() {
         (_) => Future<HomeSyncStatus>.error(Exception('status-failed')),
       );
 
-      expect(repository.getSyncStatus(), throwsA(isA<Exception>()));
+      final result = await repository.getSyncStatus();
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
       verify(source.getSyncStatus()).called(1);
     });
   });

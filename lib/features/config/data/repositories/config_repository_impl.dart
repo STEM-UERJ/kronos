@@ -1,4 +1,4 @@
-import 'package:kronos/core/contracts/use_case_contract.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../domain/entities/config_entities.dart';
 import '../../domain/errors/config_domain_error.dart';
@@ -14,10 +14,14 @@ final class ConfigRepositoryImpl implements ConfigRepository {
   AsyncResult<GithubToken> getSavedToken() async {
     try {
       final GithubToken? token = await _source.getSavedToken();
-      return token ??
-          const GithubToken(value: '', status: GithubTokenStatus.missing);
+      return Success(
+        token ??
+            const GithubToken(value: '', status: GithubTokenStatus.missing),
+      );
     } catch (error, stackTrace) {
-      throw ConfigTokenReadError(cause: error, stackTrace: stackTrace);
+      return Failure(
+        ConfigTokenReadError(cause: error, stackTrace: stackTrace),
+      );
     }
   }
 
@@ -25,9 +29,11 @@ final class ConfigRepositoryImpl implements ConfigRepository {
   AsyncResult<bool> saveToken(GithubToken token) async {
     try {
       await _source.saveToken(token);
-      return true;
+      return Success(true);
     } catch (error, stackTrace) {
-      throw ConfigTokenSaveError(cause: error, stackTrace: stackTrace);
+      return Failure(
+        ConfigTokenSaveError(cause: error, stackTrace: stackTrace),
+      );
     }
   }
 
@@ -35,9 +41,11 @@ final class ConfigRepositoryImpl implements ConfigRepository {
   AsyncResult<bool> clearToken() async {
     try {
       await _source.clearToken();
-      return true;
+      return Success(true);
     } catch (error, stackTrace) {
-      throw ConfigTokenClearError(cause: error, stackTrace: stackTrace);
+      return Failure(
+        ConfigTokenClearError(cause: error, stackTrace: stackTrace),
+      );
     }
   }
 
@@ -46,9 +54,11 @@ final class ConfigRepositoryImpl implements ConfigRepository {
     try {
       final TokenValidationResult validationResult = await _source
           .validateToken(token);
-      return validationResult;
+      return Success(validationResult);
     } catch (error, stackTrace) {
-      throw ConfigTokenValidationError(cause: error, stackTrace: stackTrace);
+      return Failure(
+        ConfigTokenValidationError(cause: error, stackTrace: stackTrace),
+      );
     }
   }
 
@@ -56,9 +66,11 @@ final class ConfigRepositoryImpl implements ConfigRepository {
   AsyncResult<SyncResult> syncPendingSessions() async {
     try {
       final SyncResult result = await _source.syncPendingSessions();
-      return result;
+      return Success(result);
     } catch (error, stackTrace) {
-      throw ConfigSessionSyncError(cause: error, stackTrace: stackTrace);
+      return Failure(
+        ConfigSessionSyncError(cause: error, stackTrace: stackTrace),
+      );
     }
   }
 }
