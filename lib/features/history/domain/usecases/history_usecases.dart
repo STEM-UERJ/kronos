@@ -10,14 +10,9 @@ final class GetHistorySessionsUseCaseImpl implements GetHistorySessionsUseCase {
   GetHistorySessionsUseCaseImpl({required HistoryRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<List<HistorySession>> call(GetHistorySessionsParams params) {
-    return _notImplemented();
+    return _repository.getSessions(params.query);
   }
 }
 
@@ -28,14 +23,9 @@ final class GetHistorySessionDetailsUseCaseImpl
   GetHistorySessionDetailsUseCaseImpl({required HistoryRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<HistorySessionDetails> call(SessionDetailsParams params) {
-    return _notImplemented();
+    return _repository.getSessionDetails(params.sessionId);
   }
 }
 
@@ -46,14 +36,12 @@ final class UpdateHistorySessionNotesUseCaseImpl
   UpdateHistorySessionNotesUseCaseImpl({required HistoryRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<void> call(UpdateSessionNotesParams params) {
-    return _notImplemented();
+    return _repository.updateSessionNotes(
+      sessionId: params.sessionId,
+      notes: params.notes,
+    );
   }
 }
 
@@ -64,13 +52,8 @@ final class DeleteHistorySessionUseCaseImpl
   DeleteHistorySessionUseCaseImpl({required HistoryRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<void> call(DeleteSessionParams params) {
-    return _notImplemented();
+    return _repository.deleteSession(params.sessionId);
   }
 }

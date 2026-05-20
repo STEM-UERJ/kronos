@@ -9,19 +9,14 @@ final class HistoryRepositoryImpl implements HistoryRepository {
 
   HistoryRepositoryImpl({required HistorySource source}) : _source = source;
 
-  Never _notImplemented() {
-    final _ = _source;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<List<HistorySession>> getSessions(HistoryQuery query) {
-    return _notImplemented();
+    return _source.getSessions(query);
   }
 
   @override
   AsyncResult<HistorySessionDetails> getSessionDetails(String sessionId) {
-    return _notImplemented();
+    return _source.getSessionDetails(sessionId);
   }
 
   @override
@@ -29,11 +24,11 @@ final class HistoryRepositoryImpl implements HistoryRepository {
     required String sessionId,
     required String notes,
   }) {
-    return _notImplemented();
+    return _source.updateSessionNotes(sessionId: sessionId, notes: notes);
   }
 
   @override
   AsyncResult<void> deleteSession(String sessionId) {
-    return _notImplemented();
+    return _source.deleteSession(sessionId);
   }
 }
