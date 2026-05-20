@@ -9,7 +9,9 @@ final class TimerInitial extends TimerState {
 }
 
 final class TimerIdle extends TimerState {
-  const TimerIdle();
+  final TimerSessionSummary? lastSession;
+
+  const TimerIdle({this.lastSession});
 }
 
 final class TimerRunning extends TimerState {

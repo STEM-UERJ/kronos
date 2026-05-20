@@ -14,7 +14,8 @@ final class TimerPlayRequested extends TimerEvent {
 }
 
 final class TimerPauseRequested extends TimerEvent {
-  const TimerPauseRequested();
+  final int elapsedSeconds;
+  const TimerPauseRequested({required this.elapsedSeconds});
 }
 
 final class TimerResumeRequested extends TimerEvent {
@@ -23,6 +24,7 @@ final class TimerResumeRequested extends TimerEvent {
 
 final class TimerFinishRequested extends TimerEvent {
   final String? notes;
+  final int elapsedSeconds;
 
-  const TimerFinishRequested({this.notes});
+  const TimerFinishRequested({this.notes, required this.elapsedSeconds});
 }

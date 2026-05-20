@@ -11,14 +11,12 @@ final class StartTimerSessionUseCaseImpl implements StartTimerSessionUseCase {
   StartTimerSessionUseCaseImpl({required TimerRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<TimerSession> call(StartTimerSessionParams params) {
-    return _notImplemented();
+    return _repository.startSession(
+      subject: params.subject,
+      notes: params.notes,
+    );
   }
 }
 
@@ -28,14 +26,9 @@ final class PauseTimerSessionUseCaseImpl implements PauseTimerSessionUseCase {
   PauseTimerSessionUseCaseImpl({required TimerRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<TimerSession> call(SessionIdParams params) {
-    return _notImplemented();
+    return _repository.pauseSession(params.sessionId);
   }
 }
 
@@ -45,14 +38,9 @@ final class ResumeTimerSessionUseCaseImpl implements ResumeTimerSessionUseCase {
   ResumeTimerSessionUseCaseImpl({required TimerRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<TimerSession> call(SessionIdParams params) {
-    return _notImplemented();
+    return _repository.resumeSession(params.sessionId);
   }
 }
 
@@ -62,14 +50,12 @@ final class TickTimerSessionUseCaseImpl implements TickTimerSessionUseCase {
   TickTimerSessionUseCaseImpl({required TimerRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<TimerSession> call(TickTimerSessionParams params) {
-    return _notImplemented();
+    return _repository.tickSession(
+      sessionId: params.sessionId,
+      elapsedSeconds: params.elapsedSeconds,
+    );
   }
 }
 
@@ -79,14 +65,12 @@ final class FinishTimerSessionUseCaseImpl implements FinishTimerSessionUseCase {
   FinishTimerSessionUseCaseImpl({required TimerRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<TimerSessionSummary> call(FinishTimerSessionParams params) {
-    return _notImplemented();
+    return _repository.finishSession(
+      sessionId: params.sessionId,
+      notes: params.notes,
+    );
   }
 }
 
@@ -97,13 +81,8 @@ final class GetLastTimerSessionUseCaseImpl
   GetLastTimerSessionUseCaseImpl({required TimerRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
-    final _ = _repository;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<TimerSessionSummary> call(NoParams params) {
-    return _notImplemented();
+    return _repository.getLastSession();
   }
 }
