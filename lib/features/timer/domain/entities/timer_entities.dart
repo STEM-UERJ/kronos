@@ -6,12 +6,14 @@ final class TimerSession {
   final String? notes;
   final int elapsedSeconds;
   final TimerSessionStatus status;
+  final bool isSynced;
 
   const TimerSession({
     required this.id,
     required this.subject,
     required this.elapsedSeconds,
     required this.status,
+    required this.isSynced,
     this.notes,
   });
 }

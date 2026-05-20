@@ -17,6 +17,7 @@ void main() {
         subject: 'dummy-subject',
         elapsedSeconds: 0,
         status: TimerSessionStatus.idle,
+        isSynced: false,
       ),
     );
     provideDummy(
@@ -38,6 +39,7 @@ void main() {
       elapsedSeconds: 120,
       status: TimerSessionStatus.running,
       notes: 'Foco',
+      isSynced: false,
     );
 
     const summary = TimerSessionSummary(

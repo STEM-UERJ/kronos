@@ -1,3 +1,4 @@
+import 'package:kronos/features/timer/domain/errors/timer_domain_error.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../domain/entities/timer_entities.dart';
@@ -17,8 +18,8 @@ final class TimerRepositoryImpl implements TimerRepository {
     try {
       final result = await _source.startSession(subject: subject, notes: notes);
       return Success(result);
-    } on Exception catch (e) {
-      return Failure(e);
+    } catch (error, stackTrace) {
+      return Failure(TimerStartError(cause: error, stackTrace: stackTrace));
     }
   }
 
@@ -27,8 +28,8 @@ final class TimerRepositoryImpl implements TimerRepository {
     try {
       final result = await _source.pauseSession(sessionId);
       return Success(result);
-    } on Exception catch (e) {
-      return Failure(e);
+    } catch (error, stackTrace) {
+      return Failure(TimerPauseError(cause: error, stackTrace: stackTrace));
     }
   }
 
@@ -37,8 +38,8 @@ final class TimerRepositoryImpl implements TimerRepository {
     try {
       final result = await _source.resumeSession(sessionId);
       return Success(result);
-    } on Exception catch (e) {
-      return Failure(e);
+    } catch (error, stackTrace) {
+      return Failure(TimerResumeError(cause: error, stackTrace: stackTrace));
     }
   }
 
@@ -53,8 +54,8 @@ final class TimerRepositoryImpl implements TimerRepository {
         elapsedSeconds: elapsedSeconds,
       );
       return Success(result);
-    } on Exception catch (e) {
-      return Failure(e);
+    } catch (error, stackTrace) {
+      return Failure(TimerTickError(cause: error, stackTrace: stackTrace));
     }
   }
 
@@ -69,8 +70,8 @@ final class TimerRepositoryImpl implements TimerRepository {
         notes: notes,
       );
       return Success(result);
-    } on Exception catch (e) {
-      return Failure(e);
+    } catch (error, stackTrace) {
+      return Failure(TimerFinishError(cause: error, stackTrace: stackTrace));
     }
   }
 
@@ -81,10 +82,15 @@ final class TimerRepositoryImpl implements TimerRepository {
       if (result != null) {
         return Success(result);
       } else {
-        return Failure(Exception('No last session found'));
+        return Failure(
+          TimerLoadError(
+            cause: Exception('No last session found'),
+            stackTrace: StackTrace.current,
+          ),
+        );
       }
-    } on Exception catch (e) {
-      return Failure(e);
+    } catch (error, stackTrace) {
+      return Failure(TimerLoadError(cause: error, stackTrace: stackTrace));
     }
   }
 }
