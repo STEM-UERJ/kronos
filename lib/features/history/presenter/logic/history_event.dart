@@ -19,3 +19,16 @@ final class HistorySessionSelected extends HistoryEvent {
 
   const HistorySessionSelected(this.sessionId);
 }
+
+final class HistoryNotesUpdated extends HistoryEvent {
+  final String sessionId;
+  final String notes;
+
+  const HistoryNotesUpdated({required this.sessionId, required this.notes});
+}
+
+final class HistorySessionDeleted extends HistoryEvent {
+  final String sessionId;
+
+  const HistorySessionDeleted(this.sessionId);
+}
