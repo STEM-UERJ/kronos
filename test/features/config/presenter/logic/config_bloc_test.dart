@@ -1,14 +1,15 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kronos/features/config/domain/errors/config_domain_error.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:kronos/core/contracts/use_case_contract.dart';
 import 'package:kronos/features/config/domain/entities/config_entities.dart';
-import 'package:kronos/features/config/domain/errors/config_domain_error.dart';
 import 'package:kronos/features/config/domain/usecases/config_usecase_contracts.dart';
 import 'package:kronos/features/config/presenter/logic/config_bloc.dart';
 import 'package:kronos/features/config/presenter/logic/config_event.dart';
 import 'package:kronos/features/config/presenter/logic/config_state.dart';
+import 'package:result_dart/result_dart.dart';
 
 class MockGetSavedGithubTokenUseCase extends Mock
     implements GetSavedGithubTokenUseCase {}
@@ -61,9 +62,11 @@ void main() {
       'emite loading e loaded quando ConfigStarted tem sucesso',
       build: () {
         when(() => getSavedGithubTokenUseCase(any<NoParams>())).thenAnswer(
-          (_) async => const GithubToken(
-            value: 'ghp_ok',
-            status: GithubTokenStatus.configured,
+          (_) async => Success(
+            const GithubToken(
+              value: 'ghp_ok',
+              status: GithubTokenStatus.configured,
+            ),
           ),
         );
         return buildBloc();
@@ -86,7 +89,9 @@ void main() {
       'emite loading e failure quando ConfigStarted retorna erro',
       build: () {
         when(() => getSavedGithubTokenUseCase(any<NoParams>())).thenAnswer(
-          (_) => Future<GithubToken>.error(const ConfigTokenReadError()),
+          (_) => Future<Result<GithubToken>>.value(
+            Failure(ConfigTokenReadError()),
+          ),
         );
         return buildBloc();
       },
@@ -106,7 +111,8 @@ void main() {
       build: () {
         when(
           () => saveGithubTokenUseCase(any<SaveGithubTokenParams>()),
-        ).thenAnswer((_) async => true);
+        ).thenAnswer((_) async => Success(true));
+
         return buildBloc();
       },
       act: (bloc) => bloc.add(const ConfigSaveTokenRequested('ghp_save')),
@@ -138,7 +144,10 @@ void main() {
       build: () {
         when(
           () => saveGithubTokenUseCase(any<SaveGithubTokenParams>()),
-        ).thenAnswer((_) => Future<bool>.error(const ConfigTokenSaveError()));
+        ).thenAnswer(
+          (_) => Future<Result<bool>>.value(Failure(ConfigTokenSaveError())),
+        );
+
         return buildBloc();
       },
       act: (bloc) => bloc.add(const ConfigSaveTokenRequested('ghp_save')),

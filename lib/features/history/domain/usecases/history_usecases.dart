@@ -1,4 +1,4 @@
-import 'package:kronos/core/contracts/use_case_contract.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../entities/history_entities.dart';
 import '../repositories/history_repository.dart';
@@ -52,7 +52,7 @@ final class UpdateHistorySessionNotesUseCaseImpl
   }
 
   @override
-  AsyncResult<void> call(UpdateSessionNotesParams params) {
+  AsyncResult<Unit> call(UpdateSessionNotesParams params) {
     return _notImplemented();
   }
 }
@@ -70,7 +70,7 @@ final class DeleteHistorySessionUseCaseImpl
   }
 
   @override
-  AsyncResult<void> call(DeleteSessionParams params) {
+  AsyncResult<Unit> call(DeleteSessionParams params) {
     return _notImplemented();
   }
 }

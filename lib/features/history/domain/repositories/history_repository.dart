@@ -1,5 +1,4 @@
-import 'package:kronos/core/contracts/use_case_contract.dart';
-
+import 'package:result_dart/result_dart.dart';
 import '../entities/history_entities.dart';
 
 abstract interface class HistoryRepository {

@@ -1,3 +1,5 @@
+import 'package:result_dart/result_dart.dart';
+
 import '../../../../core/contracts/use_case_contract.dart';
 import '../entities/config_entities.dart';
 import '../repositories/config_repository.dart';

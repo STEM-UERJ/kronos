@@ -48,4 +48,4 @@ abstract interface class FinishTimerSessionUseCase
     implements UseCase<TimerSessionSummary, FinishTimerSessionParams> {}
 
 abstract interface class GetLastTimerSessionUseCase
-    implements UseCase<TimerSessionSummary?, NoParams> {}
+    implements UseCase<TimerSessionSummary, NoParams> {}

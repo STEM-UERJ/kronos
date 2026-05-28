@@ -1,4 +1,5 @@
 import 'package:kronos/core/contracts/use_case_contract.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../entities/timer_entities.dart';
 import '../repositories/timer_repository.dart';
@@ -102,7 +103,7 @@ final class GetLastTimerSessionUseCaseImpl
   }
 
   @override
-  AsyncResult<TimerSessionSummary?> call(NoParams params) {
+  AsyncResult<TimerSessionSummary> call(NoParams params) {
     return _notImplemented();
   }
 }

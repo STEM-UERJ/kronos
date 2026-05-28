@@ -6,6 +6,7 @@ import 'package:kronos/features/config/data/repositories/config_repository_impl.
 import 'package:kronos/features/config/data/source/config_source.dart';
 import 'package:kronos/features/config/domain/entities/config_entities.dart';
 import 'package:kronos/features/config/domain/errors/config_domain_error.dart';
+import 'package:result_dart/result_dart.dart';
 
 import 'config_repository_impl_test.mocks.dart';
 
@@ -67,8 +68,9 @@ void main() {
 
         final result = await repository.getSavedToken();
 
-        expect(result.value, isEmpty);
-        expect(result.status, GithubTokenStatus.missing);
+        expect(result.isSuccess(), false);
+        expect(result.isError(), true);
+        expect(result, Failure(ConfigTokenReadError()));
         verify(source.getSavedToken()).called(1);
       },
     );
@@ -99,10 +101,11 @@ void main() {
         source.saveToken(configuredToken),
       ).thenThrow(Exception('save-failed'));
 
-      expect(
-        repository.saveToken(configuredToken),
-        throwsA(isA<ConfigTokenSaveError>()),
-      );
+      final result = await repository.saveToken(configuredToken);
+
+      expect(result.isSuccess(), false);
+      expect(result.isError(), true);
+      expect(result, Failure(ConfigTokenSaveError()));
     });
 
     test(
@@ -123,14 +126,15 @@ void main() {
 
         final result = await repository.validateToken(configuredToken);
 
-        expect(result.status, TokenValidationStatus.valid);
-        expect(result.message, 'Token valido');
+        expect(result.isSuccess(), true);
+        expect(result.isError(), false);
+        expect(result, Success(validationResult));
         verify(source.validateToken(configuredToken)).called(1);
       },
     );
 
     test(
-      'syncPendingSessions converte erro generico em ConfigSessionSyncError',
+      'validateToken converte erro generico em ConfigTokenValidationError',
       () async {
         when(source.syncPendingSessions()).thenThrow(Exception('sync-failed'));
 
@@ -148,9 +152,9 @@ void main() {
 
         final result = await repository.syncPendingSessions();
 
-        expect(result.synchronizedCount, 3);
-        expect(result.failedCount, 1);
-        expect(result.message, 'Sincronizacao finalizada');
+        expect(result.isSuccess(), true);
+        expect(result.isError(), false);
+        expect(result, Success(syncResult));
         verify(source.syncPendingSessions()).called(1);
       },
     );

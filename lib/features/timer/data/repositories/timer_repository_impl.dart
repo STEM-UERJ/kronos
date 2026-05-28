@@ -1,4 +1,4 @@
-import 'package:kronos/core/contracts/use_case_contract.dart';
+import 'package:result_dart/result_dart.dart';
 
 import '../../domain/entities/timer_entities.dart';
 import '../../domain/repositories/timer_repository.dart';
@@ -9,47 +9,82 @@ final class TimerRepositoryImpl implements TimerRepository {
 
   TimerRepositoryImpl({required TimerSource source}) : _source = source;
 
-  Never _notImplemented() {
-    final _ = _source;
-    throw UnimplementedError();
-  }
-
   @override
   AsyncResult<TimerSession> startSession({
     required String subject,
     String? notes,
-  }) {
-    return _notImplemented();
+  }) async {
+    try {
+      final result = await _source.startSession(subject: subject, notes: notes);
+      return Success(result);
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 
   @override
-  AsyncResult<TimerSession> pauseSession(String sessionId) {
-    return _notImplemented();
+  AsyncResult<TimerSession> pauseSession(String sessionId) async {
+    try {
+      final result = await _source.pauseSession(sessionId);
+      return Success(result);
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 
   @override
-  AsyncResult<TimerSession> resumeSession(String sessionId) {
-    return _notImplemented();
+  AsyncResult<TimerSession> resumeSession(String sessionId) async {
+    try {
+      final result = await _source.resumeSession(sessionId);
+      return Success(result);
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 
   @override
   AsyncResult<TimerSession> tickSession({
     required String sessionId,
     required int elapsedSeconds,
-  }) {
-    return _notImplemented();
+  }) async {
+    try {
+      final result = await _source.tickSession(
+        sessionId: sessionId,
+        elapsedSeconds: elapsedSeconds,
+      );
+      return Success(result);
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 
   @override
   AsyncResult<TimerSessionSummary> finishSession({
     required String sessionId,
     String? notes,
-  }) {
-    return _notImplemented();
+  }) async {
+    try {
+      final result = await _source.finishSession(
+        sessionId: sessionId,
+        notes: notes,
+      );
+      return Success(result);
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 
   @override
-  AsyncResult<TimerSessionSummary?> getLastSession() {
-    return _notImplemented();
+  AsyncResult<TimerSessionSummary> getLastSession() async {
+    try {
+      final result = await _source.getLastSession();
+      if (result != null) {
+        return Success(result);
+      } else {
+        return Failure(Exception('No last session found'));
+      }
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 }

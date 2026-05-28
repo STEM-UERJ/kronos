@@ -62,8 +62,9 @@ void main() {
         notes: 'Foco',
       );
 
-      expect(result.id, 'session-1');
-      expect(result.status, TimerSessionStatus.running);
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull()!.id, 'session-1');
+      expect(result.getOrNull()!.status, TimerSessionStatus.running);
       verify(
         source.startSession(subject: 'Matematica', notes: 'Foco'),
       ).called(1);
@@ -76,10 +77,10 @@ void main() {
         (_) => Future<TimerSession>.error(Exception('start-failed')),
       );
 
-      expect(
-        repository.startSession(subject: 'Matematica', notes: 'Foco'),
-        throwsA(isA<Exception>()),
-      );
+      final result = await repository.startSession(subject: 'Matematica', notes: 'Foco');
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
       verify(
         source.startSession(subject: 'Matematica', notes: 'Foco'),
       ).called(1);
@@ -95,8 +96,9 @@ void main() {
         notes: 'Concluida',
       );
 
-      expect(result.totalSeconds, 1800);
-      expect(result.subject, 'Matematica');
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull()!.totalSeconds, 1800);
+      expect(result.getOrNull()!.subject, 'Matematica');
       verify(
         source.finishSession(sessionId: 'session-1', notes: 'Concluida'),
       ).called(1);
@@ -109,10 +111,10 @@ void main() {
         (_) => Future<TimerSessionSummary>.error(Exception('finish-failed')),
       );
 
-      expect(
-        repository.finishSession(sessionId: 'session-1', notes: 'Concluida'),
-        throwsA(isA<Exception>()),
-      );
+      final result = await repository.finishSession(sessionId: 'session-1', notes: 'Concluida');
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
       verify(
         source.finishSession(sessionId: 'session-1', notes: 'Concluida'),
       ).called(1);
@@ -123,8 +125,9 @@ void main() {
 
       final result = await repository.getLastSession();
 
-      expect(result?.id, 'session-1');
-      expect(result?.totalSeconds, 1800);
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull()?.id, 'session-1');
+      expect(result.getOrNull()?.totalSeconds, 1800);
       verify(source.getLastSession()).called(1);
     });
 
@@ -133,7 +136,10 @@ void main() {
         (_) => Future<TimerSessionSummary?>.error(Exception('last-failed')),
       );
 
-      expect(repository.getLastSession(), throwsA(isA<Exception>()));
+      final result = await repository.getLastSession();
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
       verify(source.getLastSession()).called(1);
     });
   });

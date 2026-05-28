@@ -47,8 +47,10 @@ void main() {
 
       final result = await repository.getSessions(query);
 
-      expect(result.length, 1);
-      expect(result.first.id, 'h1');
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull()!.length, 1);
+      expect(result.getOrNull()!.first.id, 'h1');
+      expect(result.getOrNull()!.first.subject, 'Fisica');
       verify(source.getSessions(query)).called(1);
     });
 
@@ -57,7 +59,10 @@ void main() {
         (_) => Future<List<HistorySession>>.error(Exception('sessions-failed')),
       );
 
-      expect(repository.getSessions(query), throwsA(isA<Exception>()));
+      final result = await repository.getSessions(query);
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
       verify(source.getSessions(query)).called(1);
     });
 
@@ -70,8 +75,9 @@ void main() {
 
       final result = await repository.getSessionDetails('h1');
 
-      expect(result.session.subject, 'Fisica');
-      expect(result.notes, 'Boa sessao');
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull()!.session.subject, 'Fisica');
+      expect(result.getOrNull()!.notes, 'Boa sessao');
       verify(source.getSessionDetails('h1')).called(1);
     });
 
@@ -80,7 +86,10 @@ void main() {
         (_) => Future<HistorySessionDetails>.error(Exception('details-failed')),
       );
 
-      expect(repository.getSessionDetails('h1'), throwsA(isA<Exception>()));
+      final result = await repository.getSessionDetails('h1');
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
       verify(source.getSessionDetails('h1')).called(1);
     });
 
@@ -89,8 +98,9 @@ void main() {
         source.updateSessionNotes(sessionId: 'h1', notes: 'Atualizado'),
       ).thenAnswer((_) async {});
 
-      await repository.updateSessionNotes(sessionId: 'h1', notes: 'Atualizado');
+      final result = await repository.updateSessionNotes(sessionId: 'h1', notes: 'Atualizado');
 
+      expect(result.isSuccess(), isTrue);
       verify(
         source.updateSessionNotes(sessionId: 'h1', notes: 'Atualizado'),
       ).called(1);
@@ -101,17 +111,21 @@ void main() {
         source.updateSessionNotes(sessionId: 'h1', notes: 'Atualizado'),
       ).thenAnswer((_) => Future<void>.error(Exception('update-failed')));
 
-      expect(
-        repository.updateSessionNotes(sessionId: 'h1', notes: 'Atualizado'),
-        throwsA(isA<Exception>()),
-      );
+      final result = await repository.updateSessionNotes(sessionId: 'h1', notes: 'Atualizado');
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
+      verify(
+        source.updateSessionNotes(sessionId: 'h1', notes: 'Atualizado'),
+      ).called(1);
     });
 
     test('deleteSession executa no caso de sucesso', () async {
       when(source.deleteSession('h1')).thenAnswer((_) async {});
 
-      await repository.deleteSession('h1');
+      final result = await repository.deleteSession('h1');
 
+      expect(result.isSuccess(), isTrue);
       verify(source.deleteSession('h1')).called(1);
     });
 
@@ -120,7 +134,11 @@ void main() {
         source.deleteSession('h1'),
       ).thenAnswer((_) => Future<void>.error(Exception('delete-failed')));
 
-      expect(repository.deleteSession('h1'), throwsA(isA<Exception>()));
+      final result = await repository.deleteSession('h1');
+
+      expect(result.isError(), isTrue);
+      expect(result.exceptionOrNull(), isA<Exception>());
+      verify(source.deleteSession('h1')).called(1);
     });
   });
 }
