@@ -11,14 +11,14 @@ final class GetHomeDashboardUseCaseImpl implements GetHomeDashboardUseCase {
   GetHomeDashboardUseCaseImpl({required HomeRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
+  /*Never _notImplemented() {
     final _ = _repository;
     throw UnimplementedError();
-  }
+  }*/
 
   @override
   AsyncResult<HomeDashboard> call(NoParams params) {
-    return _notImplemented();
+    return _repository.getDashboard();
   }
 }
 
@@ -29,14 +29,14 @@ final class RefreshHomeDashboardUseCaseImpl
   RefreshHomeDashboardUseCaseImpl({required HomeRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
+  /*Never _notImplemented() {
     final _ = _repository;
     throw UnimplementedError();
-  }
+  }*/
 
   @override
   AsyncResult<HomeDashboard> call(NoParams params) {
-    return _notImplemented();
+    return _repository.refreshDashboard();
   }
 }
 
@@ -46,13 +46,13 @@ final class GetHomeSyncStatusUseCaseImpl implements GetHomeSyncStatusUseCase {
   GetHomeSyncStatusUseCaseImpl({required HomeRepository repository})
     : _repository = repository;
 
-  Never _notImplemented() {
+  /*Never _notImplemented() {
     final _ = _repository;
     throw UnimplementedError();
-  }
+  }*/
 
   @override
   AsyncResult<HomeSyncStatus> call(NoParams params) {
-    return _notImplemented();
+    return _repository.getSyncStatus();
   }
 }

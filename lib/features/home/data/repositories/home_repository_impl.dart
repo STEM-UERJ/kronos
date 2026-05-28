@@ -14,8 +14,12 @@ final class HomeRepositoryImpl implements HomeRepository {
     try {
       final result = await _source.getDashboard();
       return Success(result);
-    } on Exception catch (e) {
-      return Failure(e);
+    } on Exception {
+      return Failure(
+        Exception(
+          'Não foi possível carregar o resumo de hoje. Tente novamente.',
+        ),
+      );
     }
   }
 
@@ -24,8 +28,12 @@ final class HomeRepositoryImpl implements HomeRepository {
     try {
       final result = await _source.refreshDashboard();
       return Success(result);
-    } on Exception catch (e) {
-      return Failure(e);
+    } on Exception {
+      return Failure(
+        Exception(
+          'Erro ao atualizar os dados. Verifique o aplicativo e tente novamente.',
+        ),
+      );
     }
   }
 
@@ -34,8 +42,8 @@ final class HomeRepositoryImpl implements HomeRepository {
     try {
       final result = await _source.getSyncStatus();
       return Success(result);
-    } on Exception catch (e) {
-      return Failure(e);
+    } on Exception {
+      return Failure(Exception('Falha ao verificar status de sincronização.'));
     }
   }
 }
